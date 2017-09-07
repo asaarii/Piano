@@ -32,6 +32,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor)
             ])
         
+        for i in 1...3 {
+            let border: UIView = UIView()
+            border.translatesAutoresizingMaskIntoConstraints = false
+            border.backgroundColor = .black
+            view.addSubview(border)
+            
+            NSLayoutConstraint.activate([
+                border.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
+                border.leftAnchor.constraint(equalTo: view.leftAnchor, constant: view.frame.width / 4 * CGFloat(i)),
+                border.widthAnchor.constraint(equalToConstant: 1),
+                border.heightAnchor.constraint(equalToConstant: view.frame.height)
+                ])
+        }
+        
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .blue
@@ -71,8 +85,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
        // let flooredErapsedTime = Int(floor(elapsedTime))
         
-        print(elapsedTime)
-        tableView.contentOffset.y = CGFloat(elapsedTime * elapsedTime)
+        tableView.contentOffset.y = CGFloat(elapsedTime * elapsedTime) * CGFloat(elapsedTime)
     
         
     }
@@ -83,7 +96,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 200
+        return 1500
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -100,7 +113,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         container.translatesAutoresizingMaskIntoConstraints = false
         cell.contentView.addSubview(container)
         
-        
         // Constraints
         NSLayoutConstraint.activate([
             container.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor),
@@ -108,14 +120,31 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             container.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
             container.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
             ])
+//        if indexPath.row % 2 == 0 {
+//            container.backgroundColor = .lightGray
+//        }
         
-        if indexPath.row % 2 == 0 {
-            container.backgroundColor = .lightGray
+        for i in 1...4 {
+            let tapView: UIView = UIView()
+            tapView.translatesAutoresizingMaskIntoConstraints = false
+            tapView.backgroundColor = .black
+            
+            container.addSubview(tapView)
+            
+            NSLayoutConstraint.activate([
+                tapView.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor, constant: cell.contentView.frame.width / 4 * CGFloat(i - 1)),
+                tapView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
+                tapView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor),
+                tapView.widthAnchor.constraint(equalToConstant: cell.contentView.frame.width / 4)
+                ])
         }
         
         return cell
     }
-
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print(indexPath)
+    }
     
 }
 
