@@ -8,29 +8,54 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
-    var tableView: UITableView!
+class ViewController: UIViewController, UIScrollViewDelegate {
+    
+    var scrollView: UIScrollView!
     var startTime: TimeInterval!
     var timer: Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        view.addSubview(tableView)
+        scrollView = UIScrollView()
+        scrollView.frame = CGRect(x:0, y:0, width: view.frame.width, height: view.frame.height)
+        scrollView.center = self.view.center
+        scrollView.contentSize = CGSize(width: view.frame.width, height: view.frame.height * 2)
+        scrollView.contentOffset.y = CGFloat(scrollView.frame.height)
+        scrollView.delegate = self
         
-        // Constraint
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            tableView.rightAnchor.constraint(equalTo: view.rightAnchor)
-            ])
+        self.view.addSubview(scrollView)
+        
+        for j in 0...7 {
+            let cellView: UIView = UIView()
+            cellView.translatesAutoresizingMaskIntoConstraints = false
+            cellView.tag = j
+            cellView.frame = CGRect(x:0, y: scrollView.frame.height / 4 * CGFloat(j), width: scrollView.frame.width, height: scrollView.frame.height / 4)
+            if j % 2 == 0 {
+                cellView.backgroundColor = .blue
+            }
+            scrollView.addSubview(cellView)
+            NSLayoutConstraint.activate([
+                cellView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
+                cellView.widthAnchor.constraint(equalToConstant: scrollView.frame.width),
+                cellView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: scrollView.frame.height / 4 * CGFloat(j)),
+                cellView.heightAnchor.constraint(equalToConstant: scrollView.frame.height / 4)
+                ])
+            for i in 0...3 {
+                let tapView: UIView = UIView()
+                tapView.translatesAutoresizingMaskIntoConstraints = false
+                if i == 1 {
+                    tapView.backgroundColor = .yellow
+                }
+                cellView.addSubview(tapView)
+                NSLayoutConstraint.activate([
+                    tapView.leftAnchor.constraint(equalTo: cellView.leftAnchor, constant: cellView.frame.width / 4 * CGFloat(i)),
+                    tapView.widthAnchor.constraint(equalToConstant: cellView.frame.width / 4),
+                    tapView.topAnchor.constraint(equalTo: cellView.topAnchor),
+                    tapView.heightAnchor.constraint(equalToConstant: cellView.frame.height)
+                    ])
+            }
+        }
         
         for i in 1...3 {
             let border: UIView = UIView()
@@ -45,7 +70,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 border.heightAnchor.constraint(equalToConstant: view.frame.height)
                 ])
         }
-        
+
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = .blue
@@ -58,93 +83,36 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             button.heightAnchor.constraint(equalToConstant: 50),
             button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20)
             ])
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        
     }
     
     @objc func tap(_ sender: UIButton) {
-        
-       /* if sender.isSelected {
-            timer.invalidate()
-        } else {*/
-            startTime = Date().timeIntervalSince1970
-            timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(update), userInfo: nil, repeats: true)
-            timer.fire()
-     //   }
-        
-        
+        print("button")
+        /* if sender.isSelected {
+         timer.invalidate()
+         } else {*/
+        startTime = Date().timeIntervalSince1970
+        timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+        timer.fire()
+        //   }
     }
     
     @objc func update() {
         // 経過した時間を、現在の時刻-開始時刻で算出(秒)
         let elapsedTime = Date().timeIntervalSince1970 - startTime
         
-       // let flooredErapsedTime = Int(floor(elapsedTime))
+        // let flooredErapsedTime = Int(floor(elapsedTime))
         
-        tableView.contentOffset.y = CGFloat(elapsedTime * elapsedTime) * CGFloat(elapsedTime)
-    
+        scrollView.contentOffset.y = CGFloat(scrollView.frame.height - CGFloat(elapsedTime) * 100)
         
-    }
-    
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1500
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+        
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        
-        // Init
-        cell.contentView.subviews.forEach { $0.removeFromSuperview() }
-        
-        let container: UIView = UIView()
-        container.translatesAutoresizingMaskIntoConstraints = false
-        cell.contentView.addSubview(container)
-        
-        // Constraints
-        NSLayoutConstraint.activate([
-            container.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor),
-            container.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor),
-            container.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
-            container.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
-            ])
-//        if indexPath.row % 2 == 0 {
-//            container.backgroundColor = .lightGray
-//        }
-        
-        for i in 1...4 {
-            let tapView: UIView = UIView()
-            tapView.translatesAutoresizingMaskIntoConstraints = false
-            tapView.backgroundColor = .black
-            
-            container.addSubview(tapView)
-            
-            NSLayoutConstraint.activate([
-                tapView.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor, constant: cell.contentView.frame.width / 4 * CGFloat(i - 1)),
-                tapView.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
-                tapView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor),
-                tapView.widthAnchor.constraint(equalToConstant: cell.contentView.frame.width / 4)
-                ])
-        }
-        
-        return cell
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath)
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        
     }
-    
 }
-
