@@ -47,6 +47,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
                 if i == 1 {
                     tapView.backgroundColor = .yellow
                 }
+                tapView.tag = i + 1 + 4 * j
                 cellView.addSubview(tapView)
                 NSLayoutConstraint.activate([
                     tapView.leftAnchor.constraint(equalTo: cellView.leftAnchor, constant: cellView.frame.width / 4 * CGFloat(i)),
@@ -54,6 +55,11 @@ class ViewController: UIViewController, UIScrollViewDelegate {
                     tapView.topAnchor.constraint(equalTo: cellView.topAnchor),
                     tapView.heightAnchor.constraint(equalToConstant: cellView.frame.height)
                     ])
+                
+                let tapGesture = UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(ViewController.tapped(_:)))
+                tapView.addGestureRecognizer(tapGesture)
             }
         }
         
@@ -87,7 +93,6 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @objc func tap(_ sender: UIButton) {
-        print("button")
         /* if sender.isSelected {
          timer.invalidate()
          } else {*/
@@ -95,6 +100,12 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         timer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(update), userInfo: nil, repeats: true)
         timer.fire()
         //   }
+    }
+    
+    @objc func tapped(_ sender: UITapGestureRecognizer) {
+        if let view = sender.view as? UIView {
+            view.backgroundColor = .black
+        }
     }
     
     @objc func update() {
